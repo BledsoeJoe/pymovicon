@@ -5,7 +5,6 @@ Classes:
 - IOServer: An object that represents Movicon's IOServer, you can get/set tags and alarms
 """
 import opcua
-from opcua import client
 from opcua.ua import NodeClass
 class IOServer:
     """
@@ -40,10 +39,12 @@ class IOServer:
             self._root_node = self._opcua_client.get_root_node()
             self._opcua_nodes = IOServer._get_nodes(self._root_node)
         except Exception as e:
-            print(f"The OPC UA connection to you Movicon IOServer failed with the error: {e}\n\nPlease ensure the server is running, the OPC UA transport is enabled, and the port you've provided to IOServer() is correct")
+            print(f"""The OPC UA connection to you Movicon IOServer failed
+             with the error: {e}\n\nPlease ensure the server is running,
+             the OPC UA transport is enabled, and the port you've provided
+             to IOServer() is correct""")
             return False
-        else:
-            return True
+        return True
 
     def get_tags(self) -> dict:
         """
@@ -56,12 +57,13 @@ class IOServer:
         """
             Static method to set the value of a tag. Value passed must be of same data type as tag.
                 Args:
-                    tag (opcua.common.node.Node): the tag in which the value is to be set (i.e. tags_dict['tag']['self'])
+                    tag (opcua.common.node.Node): the tag in which the value is to be set 
+                                                  (i.e. tags_dict['tag']['self'])
                     value (tag's datatype): the value to set the tag to
         """
-        type = tag.get_data_type_as_variant_type()
+        variant_type = tag.get_data_type_as_variant_type()
         try:
-            tag.set_value(value,type)
+            tag.set_value(value,variant_type)
         except Exception as e:
             print(f"Error setting tag value: {e}\n")
 
@@ -82,7 +84,5 @@ class IOServer:
                 else:
                     nodes[dname] = IOServer._get_nodes(child)
             else:
-                #nodes[dname] = {"self" : dname}
                 nodes[child.get_display_name().Text] = child
         return nodes
-
